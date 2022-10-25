@@ -1,12 +1,13 @@
 const chrome = require("selenium-webdriver/chrome");
 const { Builder, By, Key, until } = require("selenium-webdriver");
 const { describe, it } = require("mocha");
+const { delayed } = require("selenium-webdriver/lib/promise");
 
 
 (async function googleSearch() {
     let driver = await new Builder()
         .forBrowser("chrome")
-        //.usingServer("http://localhost:4444/")
+        // .usingServer("http://localhost:4444/")
         .setChromeOptions(
             new chrome.Options()
                 .addArguments("incognito")
@@ -17,6 +18,11 @@ const { describe, it } = require("mocha");
                 .addArguments("--window-size=1920,1080")
                 .addArguments("--disable-dev-shm-usage")
                 .addArguments("--no-sandbox")
+                .addArguments("allow-file-access-from-files")
+                .addArguments("use-fake-device-for-media-stream")
+                .addArguments("use-fake-ui-for-media-stream")
+                .addArguments("--allow-file-access")
+                .addArguments("--use-file-for-fake-audio-capture=C:\\Users\\Jan\\Desktop\\selenium-docker-selenium-docker-basic\\trplenje.wav")
         )
         .setChromeService(
             chrome.setDefaultService(
@@ -24,40 +30,41 @@ const { describe, it } = require("mocha");
             )
         )
         .build();
-
+    const delay = ms => new Promise(res => setTimeout(res, ms));
     try {
-        let aplikacijaUrl = "https://staging-editor.true-bar.si/"
-        console.log("ne")
+        let aplikacijaUrl = "https://staging-editor.true-bar.si/";
+        console.log("x");
+
         // Navigate to Url
-        await driver.get("https://staging-editor.true-bar.si/");
-        // Enter text "Automation Bro" and perform keyboard action "Enter"
-        describe("Funcionalni test za prijavo", function () {
-            this.timeout(30 * 1000);
-            before(() => {
-                brskalnik.get(aplikacijaUrl);
-            });
-            console.log(aplikacijaUrl)
-            it("Neuspešna prijava - napačno geslo", async () => {
-                await pocakajStranNalozena(brskalnik, 20, "//h2");
+        await driver.get(aplikacijaUrl);
+        // login
+        await driver
+            .findElement(By.xpath("/html/body/div/div/main/div/form/div[1]/div[2]/div[2]/div[1]/div/input"))
+            .sendKeys("jani");
 
-                let searchInput = await brskalnik.findElement(By.name("username"));
-                await searchInput.sendKeys("test");
+        await driver
+            .findElement(By.xpath("/html/body/div/div/main/div/form/div[1]/div[2]/div[2]/div[2]/div/input"))
+            .sendKeys("mIqrfAx490@6");
+        // login button
+        await driver
+            .findElement(By.xpath("/html/body/div[1]/div/main/div/form/div[2]/div/button"))
+            .click();
 
-                WebElement.sendKeys(Keys.RETURN);
+        await delay(1000)
+        await driver
+            .findElement(By.xpath("/html/body/div/div/main/div/form/button"))
+            .click();
+        // v zivo button
+        await delay(1000)
+        await driver
+            .findElement(By.xpath("/html/body/div/div/main/div/div[1]/div/div/button[1]"))
+            .click();
 
-                //let uporabnikData = brskalnik.findElement(By.xpath("/html/body/app-framework/app-logged-navbar/nav/div/div[2]/a/span"));
 
-                // await (uporabnikData.getText().then(async function (vsebina) {
-                //     expect(vsebina).to.be.equal("uporabnik1 uporabnik1");
-                // }
-                // ));
-
-            });
-        });
         // console.log(await firstResult.getAttribute("textContent"));
         console.log(await (await driver.getCapabilities()).getBrowserName());
         console.log(await (await driver.getCapabilities()).getBrowserVersion());
     } finally {
-        driver.quit();
+        // driver.quit();
     }
 })();
