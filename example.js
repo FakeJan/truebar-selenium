@@ -22,7 +22,7 @@ const { delayed } = require("selenium-webdriver/lib/promise");
                 .addArguments("use-fake-device-for-media-stream")
                 .addArguments("use-fake-ui-for-media-stream")
                 .addArguments("--allow-file-access")
-                .addArguments("--use-file-for-fake-audio-capture=C:\\Users\\Jan\\Desktop\\selenium-docker-selenium-docker-basic\\trplenje.wav")
+                .addArguments("--use-file-for-fake-audio-capture")
         )
         .setChromeService(
             chrome.setDefaultService(
@@ -30,6 +30,23 @@ const { delayed } = require("selenium-webdriver/lib/promise");
             )
         )
         .build();
+    
+    /*
+    on('before:browser:launch', (browser = {}, launchOptions = { args: [] }) => {
+    if (browser.name === 'chrome') {
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=1032604#c37
+      launchOptions.args.push('--no-sandbox')
+      launchOptions.args.push('--allow-file-access-from-files')
+      launchOptions.args.push('--use-fake-ui-for-media-stream')
+      launchOptions.args.push('--use-fake-device-for-media-stream')
+      // mp3 not work
+      launchOptions.args.push('--use-file-for-fake-audio-capture=tests/fixtures/hello.wav')
+    }
+    return launchOptions
+  })
+    */
+    //https://peter.sh/experiments/chromium-command-line-switches/#use-file-for-fake-audio-capture
+    //https://www.google.com/search?q=how+to+use+--use-file-for-fake-audio-capture&rlz=1C1GCEJ_enSI1015SI1015&oq=how+to+use+--use-file-for-fake-audio-capture&aqs=chrome..69i57.2037j0j7&sourceid=chrome&ie=UTF-8
     const delay = ms => new Promise(res => setTimeout(res, ms));
     try {
         let aplikacijaUrl = "https://staging-editor.true-bar.si/";
@@ -60,7 +77,11 @@ const { delayed } = require("selenium-webdriver/lib/promise");
             .findElement(By.xpath("/html/body/div/div/main/div/div[1]/div/div/button[1]"))
             .click();
 
-
+        //need to play audio
+        //https://stackoverflow.com/questions/9419263/how-to-play-audio
+        var audio = new Audio('trplenje.wav');
+        audio.play();
+        
         // console.log(await firstResult.getAttribute("textContent"));
         console.log(await (await driver.getCapabilities()).getBrowserName());
         console.log(await (await driver.getCapabilities()).getBrowserVersion());
